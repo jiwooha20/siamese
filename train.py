@@ -29,7 +29,6 @@ def main(args):
     save_every = args.save_every
     test_every = args.test_every
 
-    os.makedirs(f"./results/{exp_name}", exist_ok=True)
     os.makedirs(f"./siamase/{exp_name}", exist_ok=True)
     model_path = f"./siamase/{exp_name}"
 
