@@ -1,14 +1,9 @@
-import argparse
 import os
 import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 import random
 import torch
-import torchvision
-import torchvision.models.detection.mask_rcnn
-from PIL import Image
-from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
 
 warnings.filterwarnings('ignore')
