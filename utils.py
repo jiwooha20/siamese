@@ -30,13 +30,16 @@ class musicDatasetTrain(Dataset):
         datas = {}
         idx = 0
         for alphaPath in os.listdir(dataPath):
-                    datas[idx] = []
-                    for samplename in os.listdir(os.path.join(dataPath, alphaPath)):
-                        filePath = os.path.join(dataPath, alphaPath,samplename)
-                        #print(filePath)
-                        datas[idx].append(np.load(filePath))
-                    idx += 1
+            datas[idx] = []
+            for samplename in os.listdir(os.path.join(dataPath, alphaPath)):
+                filePath = os.path.join(dataPath, alphaPath,samplename)
+                datas[idx].append(filePath)
+                # datas[idx].append(np.load(filePath))
+            #print("debug:", datas[idx])
+            if len(datas[idx])>0:
+                idx += 1
         print("finish loading training dataset to memory")
+        #print(datas)
         return datas, idx
        
 
@@ -46,8 +49,8 @@ class musicDatasetTrain(Dataset):
         if index % 2 == 1:
             label = 1.0
             idx1 = random.randint(0, self.num_classes - 1)
-            image1 = random.choice(self.datas[idx1])
-            image2 = random.choice(self.datas[idx1])
+            image1_num = random.choice(self.datas[idx1])
+            image2_num = random.choice(self.datas[idx1])
         # get image from different class
         else:
             label = 0.0
@@ -55,11 +58,18 @@ class musicDatasetTrain(Dataset):
             idx2 = random.randint(0, self.num_classes - 1)
             while idx1 == idx2:
                 idx2 = random.randint(0, self.num_classes - 1)
-            image1 = random.choice(self.datas[idx1])
-            image2 = random.choice(self.datas[idx2])
+            image1_num = random.choice(self.datas[idx1])
+            image2_num = random.choice(self.datas[idx2])
+        # size 맞추기
 
-        image1 = torch.Tensor(image1)
-        image2 = torch.Tensor(image2)
+        image1 = np.load(image1_num)
+        image2 = np.load(image2_num)
+        image1 = image1[:,:2500]
+        image2 = image2[:,:2500]
+
+        image1 = torch.Tensor(image1).unsqueeze(0)
+        image2 = torch.Tensor(image2).unsqueeze(0)
+
         return image1, image2, torch.from_numpy(np.array([label], dtype=np.float32))
 
 
@@ -118,9 +128,9 @@ class musicDatasetTest(Dataset):
 
 if __name__ == "__main__":
      # test
-     datapath = "data_mfcc"
+     datapath = "save_dir_mfcc"
      trainset = musicDatasetTrain(datapath,100)
      print(len(trainset))
-     print(trainset[0])
+     print(trainset.num_classes)
 
     

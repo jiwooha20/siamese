@@ -9,13 +9,13 @@ import pickle
 import torch
 from torch.utils.data import DataLoader
 from utils import musicDatasetTest, musicDatasetTrain
-from model import Siamese
+from model import Siamese_mfcc
 from torch.autograd import Variable
 warnings.filterwarnings('ignore')
 
 
 def main(args):
-    path = "./data_"
+    path = "./save_dir_"
     
     # hyperparameter
     exp_name = args.exp_name
@@ -49,7 +49,7 @@ def main(args):
     loss_fn = torch.nn.BCEWithLogitsLoss(size_average=True)
 
     num_classes = 3  # 2 class (normal, TIL) + background
-    model = Siamese()
+    model = Siamese_mfcc()
     model.to(device)
     params = [p for p in model.parameters() if p.requires_grad]
     optimizer = torch.optim.Adam(params, lr=learning_rate, weight_decay=0.0001)
@@ -73,6 +73,8 @@ def main(args):
         else:
             img1, img2, label = Variable(img1), Variable(img2), Variable(label)
         optimizer.zero_grad()
+        #print(img1.shape)
+        #print(img2.shape)
         output = model.forward(img1, img2)
         loss = loss_fn(output, label)
         loss_val += loss.item()
@@ -116,8 +118,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--exp_name", type=str, default='test')
     parser.add_argument("--lr", type=float, default=0.0001)
-    parser.add_argument("--batch_size", type=int, default=4)
-    parser.add_argument("--max_iter", type=int, default=50000)
+    parser.add_argument("--batch_size", type=int, default=1)
+    parser.add_argument("--max_iter", type=int, default=200)
     parser.add_argument("--epochs", type=int, default=5)
     parser.add_argument("--lr_scheduler", action="store_false")
     parser.add_argument("--data_type",type=str,default="mfcc")
